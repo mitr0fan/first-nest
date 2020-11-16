@@ -4,17 +4,19 @@ import { User } from 'src/interfaces/user.interface';
 
 @Injectable()
 export class UserService {
+    users: User[] = [];
+
     async findOne(email: string): Promise<User> {
-        return DATA.users.find(i => i.email === email);
+        return this.users.find((i) => i.email === email);
     }
 
     async create(data: Partial<User>): Promise<Partial<User>> {
-        let id = DATA.users
-            .map(i => i.id)
-            .reduce((prev, curr) => curr > prev ? curr : prev, -1);
+        let id = this.users
+            .map((i) => i.id)
+            .reduce((prev, curr) => (curr > prev ? curr : prev), -1);
         let user = new UserInfo(data);
         user.id = ++id;
-        DATA.users.push(user);
+        this.users.push(user);
         const { password, ...result } = user;
         return result;
     }
