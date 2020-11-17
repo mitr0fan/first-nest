@@ -10,6 +10,10 @@ export class UserService {
         return this.users.find((i) => i.email === email);
     }
 
+    async findOneById(id: number): Promise<User> {
+        return this.users.find((i) => i.id === id);
+    }
+
     async create(data: Partial<User>): Promise<Partial<User>> {
         let id = this.users
             .map((i) => i.id)

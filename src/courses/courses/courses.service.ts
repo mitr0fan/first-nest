@@ -149,7 +149,6 @@ export class CoursesService {
     async removeCourse(id: number) {
         const index = this.data.findIndex(i => i.id === id);
 
-
         if (index || index === 0) {
             return this.data.splice(index, 1);
         } else {
