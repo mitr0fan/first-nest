@@ -128,8 +128,24 @@ export class CoursesService {
     async getCourses(query: HttpParams): Promise<Course[]> {
         const offset = +query.offset || 0;
         const limit = +query.limit || Infinity;
+        const paramsList: {key: string, value: string}[] = [];
 
-        return this.data.filter((i, index) => index >= offset && index < offset + limit);
+        Object.entries(query)
+            .forEach(([key, value]) => {
+                if (key !== 'offset' && key !== 'limit') {
+                    paramsList.push({ key, value })
+                }
+            });
+
+        return this.data.filter((i, index) => {
+            let isValueChecked = false;
+
+            isValueChecked = paramsList.every(param => {
+                return i[param.key] && i[param.key].toLowerCase().includes(param.value.toLowerCase());
+            });
+
+            return isValueChecked && index >= offset && index < offset + limit
+        });
     }
 
     async getOne(id: number) {
