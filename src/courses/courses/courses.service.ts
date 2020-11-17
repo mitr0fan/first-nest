@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Author } from 'src/interfaces/author.interface';
 import { Course } from 'src/interfaces/course.interface';
-import { HttpParams } from 'src/interfaces/http-params.interface';
 
 @Injectable()
 export class CoursesService {
@@ -124,79 +122,4 @@ export class CoursesService {
             id: 7,
         },
     ];
-
-    async getCourses(query: HttpParams): Promise<Course[]> {
-        const offset = +query.offset || 0;
-        const limit = +query.limit || Infinity;
-        const paramsList: {key: string, value: string}[] = [];
-
-        Object.entries(query)
-            .forEach(([key, value]) => {
-                if (key !== 'offset' && key !== 'limit') {
-                    paramsList.push({ key, value })
-                }
-            });
-
-        return this.data.filter((i, index) => {
-            let isValueChecked = false;
-
-            isValueChecked = paramsList.every(param => {
-                return i[param.key] && i[param.key].toLowerCase().includes(param.value.toLowerCase());
-            });
-
-            return isValueChecked && index >= offset && index < offset + limit
-        });
-    }
-
-    async getOne(id: number) {
-        return this.data.find(i => i.id === id);
-    }
-
-    async addCourse(course: Partial<Course>) {
-        let id = this.data
-            .map((i) => i.id)
-            .reduce((prev, curr) => (curr > prev ? curr : prev), -1);
-
-        course.id = ++id;
-        this.data.push(new CourseInfo(course));
-        return course;
-    }
-
-    async removeCourse(id: number) {
-        const index = this.data.findIndex(i => i.id === id);
-
-        if (index || index === 0) {
-            return this.data.splice(index, 1);
-        } else {
-            return null;
-        }
-    }
-
-    async editCourse(edited: Partial<Course>) {
-        const index = this.data.findIndex(i => i.id === edited.id);
-
-        if (index || index === 0) {
-            return this.data[index] = {...this.data[index], ...edited};
-        } else {
-            return null;
-        }
-    }
-
-}
-
-class CourseInfo implements Course {
-    id: number = null;
-    title: string = null;
-    date: string | number = null;
-    duration: number = null;
-    description: string = null;
-    topRated: boolean = false;
-    authors: Author[] = [];
-
-    constructor(data: Partial<Course>) {
-        Object.entries(data)
-            .forEach(([key, value]) => {
-                this[key] = value;
-            });
-    }
 }
