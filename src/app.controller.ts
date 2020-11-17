@@ -17,11 +17,6 @@ import { UserService } from './user/user/user.service';
 export class AppController {
     constructor(private authService: AuthService, private userService: UserService) { }
 
-    @Get()
-    main() {
-        return 'Hello';
-    }
-
     @Post('register')
     async register(@Body() body: Partial<User>) {
         const user = await this.authService.register(body);

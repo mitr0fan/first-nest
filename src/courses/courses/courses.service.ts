@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Author } from 'src/interfaces/author.interface';
 import { Course } from 'src/interfaces/course.interface';
 import { HttpParams } from 'src/interfaces/http-params.interface';
 
@@ -131,4 +132,56 @@ export class CoursesService {
         return this.data.filter((i, index) => index >= offset && index < offset + limit);
     }
 
+    async getOne(id: number) {
+        return this.data.find(i => i.id === id);
+    }
+
+    async addCourse(course: Partial<Course>) {
+        let id = this.data
+            .map((i) => i.id)
+            .reduce((prev, curr) => (curr > prev ? curr : prev), -1);
+
+        course.id = ++id;
+        this.data.push(new CourseInfo(course));
+        return course;
+    }
+
+    async removeCourse(id: number) {
+        const index = this.data.findIndex(i => i.id === id);
+
+
+        if (index || index === 0) {
+            return this.data.splice(index, 1);
+        } else {
+            return null;
+        }
+    }
+
+    async editCourse(edited: Partial<Course>) {
+        const index = this.data.findIndex(i => i.id === edited.id);
+
+        if (index || index === 0) {
+            return this.data[index] = {...this.data[index], ...edited};
+        } else {
+            return null;
+        }
+    }
+
+}
+
+class CourseInfo implements Course {
+    id: number = null;
+    title: string = null;
+    date: string | number = null;
+    duration: number = null;
+    description: string = null;
+    topRated: boolean = false;
+    authors: Author[] = [];
+
+    constructor(data: Partial<Course>) {
+        Object.entries(data)
+            .forEach(([key, value]) => {
+                this[key] = value;
+            });
+    }
 }
